@@ -2,17 +2,17 @@
   Program: RC Motor Driver Code
   By:      Robert J. Guziec
   Written: 09/30/25
-  Edited:  09/30/2025
+  Edited:  10/06/2025
   I/O Pins
-  A0: 
-  A1: 
+  A0: Motor FORWARD (PUSH BUTTONS)
+  A1: Motor BACKWARD (PUSH BUTTONS) 
   A2: 
   A3: 
   A4: 
   A5: 
   D0:
-  D1:
-  D2:
+  D1: Servo RIGHT (PUSH BUTTONS)
+  D2: Servo LEFT  (PUSH BUTTONS)
   D3: 
   D4: 
   D5: Motor Reverse     [TCNT0 OC0B] [Pin 7 H-Bridge]
@@ -47,8 +47,9 @@ void setup() {
   DDRB = 0x04; // Set output to D10
 
   // * * * * PINCHANGE INT SETUP * * * *
-  PCICR = 0x04;
-  PCMSK2 = 0X0C; 
+  PCICR = 0x06;
+  PCMSK2 = 0X0C; // Servo control
+  PCMSK1 = 0x03; // Motor Control
 
 
   // TESTING PURPOSES
@@ -57,15 +58,11 @@ void setup() {
   sei();
 }
 
-
-// Move farward values
-void moveForward() {
-  OCR0A = 237; OCR0B = 0;
-}
-
 void loop() {
-
+  // Nothing to see here! :D
 }
+
+// Servo Control
 ISR(PCINT2_vect){
   if (PIND & 0x08){
     OCR1B = 500;
@@ -77,5 +74,21 @@ ISR(PCINT2_vect){
   }
   else{
     OCR1B = 950;
+  }
+}
+
+// Motor Control
+ISR(PCINT1_vect){
+  if (PINC & 0x01){
+    OCR0A = 150; 
+    OCR0B = 0;
+  }
+  else if (PINC & 0x02){
+    OCR0A = 0; 
+    OCR0B = 150;
+  }
+  else{
+    OCR0A = 0; 
+    OCR0B = 0;
   }
 }
