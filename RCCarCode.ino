@@ -46,9 +46,9 @@ void setup() {
   // Output
   DDRB = 0x04; // Set output to D10
 
-  // * * * * EXTERNAL INT SETUP * * * *
-  EICRA = 0x0F;
-  EIMSK = 0x03;
+  // * * * * PINCHANGE INT SETUP * * * *
+  PCICR = 0x04;
+  PCMSK2 = 0X0C; 
 
 
   // TESTING PURPOSES
@@ -66,13 +66,16 @@ void moveForward() {
 void loop() {
 
 }
-
-ISR(INT0_vect){
+ISR(PCINT2_vect){
+  if (PIND & 0x08){
+    OCR1B = 500;
+    Serial.println("LEFT");
+  }
+  else if (PIND & 0x04){
   OCR1B = 1400;
-  Serial.println("LEFT");
-}
-
-ISR(INT1_vect){
-  OCR1B = 500;
   Serial.println("RIGHT");
+  }
+  else{
+    OCR1B = 950;
+  }
 }
